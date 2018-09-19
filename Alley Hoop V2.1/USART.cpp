@@ -11,7 +11,7 @@ USART::USART(){
 
 
 
-//write a string in the terminal
+//write a string in the Serial
 void USART::print(const char st[]) {
 	for(uint8_t i = 0 ; st[i] != 0 ; i++) {		//iterate over every char in the string
 		while(~UCSR0A & (1 << UDRE0));			//wait till the transmit buffer is empty
@@ -24,7 +24,7 @@ void USART::println(const char st[]){
 	this->print("\n\r");
 }
 
-//write an integer in the terminal
+//write an integer in the Serial
 void USART::print(int i) {
 	char buffer[16];							//create a string
 	itoa(i,buffer,10);							//parse the integer into the string

@@ -1,7 +1,7 @@
 /*
 * USART.h
 *This function takes care of the serial connection over the USB port for debugging purposes
-*	print(char* or int)		write one or more characters in the terminal
+*	print(char* or int)		write one or more characters in the Serial
 *
 * Created: 7-9-2018 14:01:55
 * Author: Jur Hoekstra
@@ -21,10 +21,10 @@ class USART{
 	public:
 	USART();								//regular constructor, uses baud rate of 9600
 	~USART(){};								//deconstructor
-	void print(const char[]);						//write one or more characters in the terminal
+	void print(const char[]);						//write one or more characters in the Serial
 	void print(int);						//write an integer
-	void println(const char[]);						//write one or more characters in the terminal on a new line
+	void println(const char[]);						//write one or more characters in the Serial on a new line
 	void println(int);						//write an integer on a new line
-		
+	
 };
 #endif //__USART_H__
