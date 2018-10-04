@@ -8,5 +8,9 @@ IOPins.cpp
 
 main.cpp
 
+mcp_can.cpp
+
+SPI.cpp
+
 USART.cpp
 

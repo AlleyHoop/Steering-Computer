@@ -10,7 +10,7 @@ void initIO(){
 	//when adding/altering pins, alter them in the respective switch case as well.
 	//digitalwrite
 	DDRA |= 0b11111111;
-	DDRB |= 0b00001111;
+	//B pins are reserved for SPI, don't touch those
 	DDRC |= 0b11111111;
 	DDRD |= 0b10000000;
 	DDRG |= 0b00000111;
@@ -34,7 +34,7 @@ void initIO(){
 	TCCR1A |= (( 1 << COM1A1) | (1 << COM1B1));
 	TCCR2A |= (( 1 << COM2A1) | (1 << COM2B1));
 	TCCR3A |= (( 1 << COM3A1) | (1 << COM3B1));
-	TCCR4A |= (( 1 << COM4A1) | (1 << COM4B1));
+	//TCCR4A |= (( 1 << COM4A1) | (1 << COM4B1));
 	
 	//Waveform Generation
 	//note that here OCRxA and OCRxB use the same registry and thus also use the same waveform.
@@ -43,7 +43,7 @@ void initIO(){
 	TCCR1A |= ((1 << WGM12) | (1 << WGM10));		//16 bit timer, scaled back to 8 bit. (TCCR0x and TCCR2x are 8 bit already)
 	TCCR2A |= ((1 << WGM21) | (1 << WGM20));
 	TCCR3A |= ((1 << WGM32) | (1 << WGM30));		//16 bit
-	TCCR4A |= ((1 << WGM42) | (1 << WGM40));
+	//TCCR4A |= ((1 << WGM42) | (1 << WGM40));
 	
 	//clock Select
 	//currently selected, Internal clock, /8 prescaler. this starts the PWM as well
@@ -170,9 +170,8 @@ void digitalWrite(int pin,bool val){
 }
 
 bool digitalRead(int pin){
-	if(pin<22||pin>53){					//check if the pin is a digital IO pin
-		Serial.print("ERROR: tried to read digital value from unsupported digital pin");
-		Serial.println(pin);
+	if(pin==4){
+		if(PING&(1<<PING5))	return true;
 	}
 	else if(pin<30){					//check if pin is in the A register
 		pin-=22;						//make pinrange 0-7
@@ -197,7 +196,12 @@ bool digitalRead(int pin){
 		pin=(53-pin);
 		if(PINB&(1<<pin))	return true;							//break function
 	}
-	return false;
+	else{					//pin unsupported
+		Serial.print("ERROR: tried to read digital value from unsupported digital pin: ");
+		Serial.println(pin);
+		return false;
+	}
+	return false;	
 }
 
 int analogRead(int pin){

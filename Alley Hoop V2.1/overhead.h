@@ -3,6 +3,8 @@
 
 #include "IOPins.h"
 #include "USART.h"
+#include "SPI.h"
+#include "mcp_can.h"
 
 #define HIGH 1
 #define LOW 0

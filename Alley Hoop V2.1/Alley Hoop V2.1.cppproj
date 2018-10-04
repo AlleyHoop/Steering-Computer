@@ -28,6 +28,18 @@
     <ResetRule>0</ResetRule>
     <eraseonlaunchrule>0</eraseonlaunchrule>
     <EraseKey />
+    <AsfFrameworkConfig>
+      <framework-data xmlns="">
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.40.0" />
+        </dependencies>
+      </framework-data>
+    </AsfFrameworkConfig>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -158,7 +170,22 @@
     <Compile Include="main.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="mcp_can.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="mcp_can.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="mcp_can_dfs.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="overhead.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="SPI.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="SPI.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="USART.cpp">

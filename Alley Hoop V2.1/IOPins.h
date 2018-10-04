@@ -59,10 +59,10 @@ bool digitalRead(int);			//allows reading a digital value from a pin
 #define do_brake1_enable			24				//digital pin24, enable for the braking pump
 #define do_brake2_enable			25				//digital pin25, enable for the braking pump
 #define do_drive_enable				26				//digital pin26, enable for the engine control system
-#define do_drive_forward			27				//digital pin27, forward enbale for the engine control system
-#define do_drive_reverse			28				//digital pin28, reverse enable for the engine control system
+#define do_drive_forward			27				//digital pin27, forward enabled for the engine control system
+#define do_drive_reverse			28				//digital pin28, reverse enabled for the engine control system
 #define do_drive_brake				29				//digital pin29, brake signal for the engine control sytem
-#define do_drive_throttleswitch		30				//digital pin30, signal that needs to be high for the trottle to work of hte engine control system
+#define do_drive_throttleswitch		30				//digital pin30, signal that needs to be high for the trottle to work of the Curtis
 #define di_keysignaal				31				//digital pin31, input that lets the system know it is on because of the key
 #define di_gnd_lader				32				//digital pin32, input that lets the system know it is on because of the charger
 #define do_hv_relais				33				//digital pin33, if High HV-relais will turn on
@@ -72,7 +72,7 @@ bool digitalRead(int);			//allows reading a digital value from a pin
 //digital pin37
 //digital pin38
 #define di_hmi_switchjoystick		39				//digital pin39, mode select of HMI: joystick
-#define di_hmi_switchremote			40				//digital pin40, mode select of HMI: remoteote
+#define di_hmi_switchremote			40				//digital pin40, mode select of HMI: remote control
 #define di_hmi_switchauto			41				//digital pin41, mode select of HMI: auto
 #define di_hmi_switchfr				42				//digital pin42, switch to choose between forward and reverse drive of the HMI
 #define di_hmi_switchstop			43				//digital pin43, switch to make a safe stop of the HMI
