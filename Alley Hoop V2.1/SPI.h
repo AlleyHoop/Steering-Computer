@@ -28,7 +28,7 @@ class SPIClass {
 	public:
 	static void begin();					// Initialize the SPI library
 	void beginTransaction(SPISettings);
-	uint8_t transfer(uint8_t);			// Write to the SPI bus (MOSI pin) and also receive (MISO pin)
+	uint8_t transfer(uint8_t);				// Write to the SPI bus (MOSI pin) and also receive (MISO pin)
 	uint16_t transfer16(uint16_t);
 	void transfer(void *buf, size_t);
 	void endTransaction(){};				//not used

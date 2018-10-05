@@ -2,24 +2,23 @@
 
 ///Drive variables
 int	drivemode = 0;						//position of the switch key
-bool  driving_direction = true;			//forward (true) or backwards driving
-                 
+bool driving_direction = true;			//forward (true) or backwards driving
 int32_t	driving_dv = 0;							 
-				   
-int32_t  steering_dv = 0;				//desired value of the steering
-int32_t  steering_delta = 0;            //delta of the steering   
-int32_t  steering_cv = 0;				//current value of the steering
-uint8_t  steering_ov = 0;               //output value of the steering
+ 
+int32_t steering_dv = 0;				//desired value of the steering
+int32_t steering_delta = 0;				//delta of the steering
+int32_t steering_cv = 0;				//current value of the steering
+uint8_t steering_ov = 0;				//output value of the steering
 
-int32_t  engine_dv = 0;					//desired value of the engine
-int32_t  engine_delta = 0;				//delta of the engine
-int32_t  engine_cv = 0;					//current value of the engine
-uint8_t  engine_ov = 0;					//output value of the engine
+int32_t engine_dv = 0;					//desired value of the engine
+int32_t engine_delta = 0;				//delta of the engine
+int32_t engine_cv = 0;					//current value of the engine
+uint8_t engine_ov = 0;					//output value of the engine
 
-int32_t  braking_dv = 0;				//desired value of the braking
-int32_t  braking_delta = 0;				//delta of the braking
-int32_t  braking_cv = 0;				//current value of the braking
-uint8_t  braking_ov = 0;				//output value of the braking
+int32_t braking_dv = 0;					//desired value of the braking
+int32_t braking_delta = 0;				//delta of the braking
+int32_t braking_cv = 0;					//current value of the braking
+uint8_t braking_ov = 0;					//output value of the braking
 
 uint16_t low_voltage;					//values received from the CURTIS via the can bus
 uint16_t engine_rpm;
@@ -33,8 +32,8 @@ void initDrive(){
 	digitalWrite(do_drive_enable, HIGH);			//set outputs high, enabling components, don't know why you would want them turned off.
 	digitalWrite(do_brake1_enable, HIGH);			//but it's designed into the PCB
 	digitalWrite(do_brake2_enable, HIGH);
-	digitalWrite(do_steer_r_en,   HIGH);
-	digitalWrite(do_steer_l_en,   HIGH);
+	digitalWrite(do_steer_r_en, HIGH);
+	digitalWrite(do_steer_l_en, HIGH);
 	digitalWrite(do_verbinding,HIGH);				//let the board power itself on, because design decisions. 
 	mode_select();									//get the currently selected drive mode
 }
@@ -71,12 +70,12 @@ void drive(){
 	}
 	run_steer();				//update the steering system
 	run_brake();				//update the braking system
-	run_curtis();				//update the curtiss
+	run_curtis();				//update the Curtis
 }
 
 void mode_joystick(){
 	digitalWrite(do_hv_relais,HIGH);										//enable the HV circuit
-	if(engine_rpm==0)														//only allow switching when the car isnt't driving
+	if(engine_rpm==0)														//only allow switching when the car isn't driving
 		driving_direction = digitalRead(di_hmi_switchfr);						//Detect if the car needs to be in forward or reverse mode from the HMI signals
 	//read the desired value from the joystick for steering and convert it to 10th of degrees
 	steering_dv = (analogRead(ai_hmi_steering)-steering_joystick_offset);
@@ -94,12 +93,12 @@ void mode_joystick(){
 		if(driving_dv>0)								//and joystick pushed forward
 			engine_dv=driving_dv;						//copy the driving parameter to the engine
 		else
-			braking_dv=abs(driving_dv);					//else brake
+			braking_dv=abs(driving_dv);					//else brake (and make value positive)
 	} else {											//if driving backwards
 		if(driving_dv>0)								//and joystick pushed forward
 		braking_dv=driving_dv;							//brake
 		else
-		engine_dv=abs(driving_dv);						//drive
+		engine_dv=abs(driving_dv);						//drive (and make value positive)
 	}
 }
 
@@ -109,13 +108,13 @@ void mode_auto(){
 }
 
 void mode_idle(){
-	//put components in their default position
-	engine_dv=0;
-	steering_dv=0;
-	braking_dv=0;
+	engine_dv=0;								//don't accelerate anymore
+	steering_dv=steering_joystick_offset;		//put wheels in default position
+	braking_dv=100;								//brake a bit
 	//if the car has stopped, disable the engine
 	if(engine_rpm==0){
-		digitalWrite(do_hv_relais,LOW);
+		digitalWrite(do_hv_relais,LOW);			//disengage engine relay
+		braking_dv=0;							//stop braking
 	}
 }
 
@@ -129,7 +128,7 @@ void run_brake(){
 	braking_delta = braking_dv - braking_cv;
 	if(abs(braking_delta)<10)
 		braking_delta = 0;
-	braking_ov =  constrain(braking_dv * braking_kp, 0, 255);
+	braking_ov = constrain(braking_dv * braking_kp, 0, 255);
 	analogWrite(pwm_brake_pump, braking_dv);															//Write op to brake pump
 }
 
@@ -157,8 +156,8 @@ void run_steer(){
 
 void run_curtis(){
 	engine_cv = (engine_rpm * float(100 / 1023));												//the proces value of the engine system is the rpm which we read from the CAN-bus of the curtis
-	digitalWrite(do_drive_forward,  driving_direction);											//give the curtiss the correct driving direction
-	digitalWrite(do_drive_reverse,  !driving_direction);
+	digitalWrite(do_drive_forward, driving_direction);											//give the curtiss the correct driving direction
+	digitalWrite(do_drive_reverse, !driving_direction);
 	
 	//Set the curtis in the right mode for braking, driving or neutral																		//if we want to brake
 		digitalWrite(do_drive_throttleswitch, engine_dv);				//if there is an engine signal, enable listening to the throttle
