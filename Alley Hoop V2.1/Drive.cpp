@@ -34,7 +34,6 @@ void initDrive(){
 	digitalWrite(do_brake2_enable, HIGH);
 	digitalWrite(do_steer_r_en, HIGH);
 	digitalWrite(do_steer_l_en, HIGH);
-	digitalWrite(do_verbinding,HIGH);				//let the board power itself on, because design decisions. 
 	mode_select();									//get the currently selected drive mode
 }
 

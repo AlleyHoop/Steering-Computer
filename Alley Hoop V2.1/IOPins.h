@@ -66,7 +66,8 @@ bool digitalRead(int);			//allows reading a digital value from a pin
 #define di_keysignaal				31				//digital pin31, input that lets the system know it is on because of the key
 #define di_gnd_lader				32				//digital pin32, input that lets the system know it is on because of the charger
 #define do_hv_relais				33				//digital pin33, if High HV-relais will turn on
-#define do_verbinding				34				//digital pin34, if High the system will keep itself on
+//#define do_verbinding				34				//digital pin34, if High, ignore the key, the system will keep itself on. 
+//DO NOT USE, THIS MAKES IT SO THE CAR CANNOT BE TURNED OFF EXCEPT BY MANUALLY DISCONNECTING THE BATTERY!
 #define do_pilotswitch				35				//digital pin35, output to speak with the charging system
 //digital pin36
 //digital pin37
