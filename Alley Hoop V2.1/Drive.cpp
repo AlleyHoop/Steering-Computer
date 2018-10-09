@@ -108,7 +108,7 @@ void mode_auto(){
 
 void mode_idle(){
 	engine_dv=0;								//don't accelerate anymore
-	steering_dv=steering_joystick_offset;		//put wheels in default position
+	steering_dv=0;								//put wheels in default position
 	braking_dv=100;								//brake a bit
 	//if the car has stopped, disable the engine
 	if(engine_rpm==0){
@@ -154,16 +154,16 @@ void run_steer(){
 }
 
 void run_curtis(){
-	engine_cv = (engine_rpm * float(100 / 1023));												//the proces value of the engine system is the rpm which we read from the CAN-bus of the curtis
-	digitalWrite(do_drive_forward, driving_direction);											//give the curtiss the correct driving direction
+	engine_cv = (engine_rpm * float(100 / 1023));												//the process value of the engine system is the rpm which we read from the CAN-bus of the Curtis
+	digitalWrite(do_drive_forward, driving_direction);											//give the Curtis the correct driving direction
 	digitalWrite(do_drive_reverse, !driving_direction);
 	
-	//Set the curtis in the right mode for braking, driving or neutral																		//if we want to brake
+	//Set the Curtis in the right mode for braking, driving or neutral																		//if we want to brake
 		digitalWrite(do_drive_throttleswitch, engine_dv);				//if there is an engine signal, enable listening to the throttle
 		digitalWrite(do_drive_brake, braking_dv);						//if there is an braking signal, turn on the braking 
 
 	engine_delta = engine_dv - engine_cv;									//calculate delta
 	engine_ov = constrain(engine_delta * engine_kp * 255 / 100, 0, 255);	//calculate output value
-	analogWrite(pwm_drive_throttle, engine_ov);								//Write op to throttle signal of curtis
+	analogWrite(pwm_drive_throttle, engine_ov);								//Write op to throttle signal of Curtis
 }
 
