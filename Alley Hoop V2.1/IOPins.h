@@ -27,7 +27,7 @@ bool digitalRead(int);			//allows reading a digital value from a pin
 /// Analog,
 #define ai_steer_pot				A0				//analog pinA00, potentiometer of the steering system
 #define ai_brake_pressure			A1				//analog pinA01, pressure sensor of the braking system
-#define ai_hmi_gas					A2				//analog pinA02, gas signal of the joystick
+#define ai_hmi_engine					A2				//analog pinA02, engine signal of the joystick
 #define ai_hmi_brake				A3				//analog pinA03, brake signal of the joystick
 #define ai_hmi_steering				A4				//analog pinA04, steering signal of the joystick
 //analog pinA05
@@ -43,11 +43,11 @@ bool digitalRead(int);			//allows reading a digital value from a pin
 //analog pinA15
 
 /// PWM
-#define pwm_steer_lpwm				2				//PWM pin02, pwm signal to control the speed of the steering motor in the left direction
-#define pwm_steer_rpwm				3				//PWM pin03, pwm signal to control the speed if the steering motor in the right direction
+#define pwm_steer_rpwm				2				//PWM pin02, pwm signal to control the speed if the steering motor in the right direction
+#define pwm_steer_lpwm				3				//PWM pin03, pwm signal to control the speed of the steering motor in the left direction
 #define pwm_brake_pump				7				//PWM pin07, pwm signal to control the speed of the braking pump
 #define pwm_drive_throttle			8				//PWM pin08, throttle signal that will control the engine
-#define di_remote_gas				9				//PWM pin09, gas signal of the remoteote controller (also brake)
+#define di_remote_engine				9				//PWM pin09, gas signal of the remoteote controller (also brake)
 #define di_remote_steering			10				//PWM pin10, steer signal of the remoteote controller
 #define di_remote_switchfr			11				//PWM pin11, switch to choose between forward en reverse drving of the remoteote
 #define pwm_laadpaal_pulse			12				//PWM pin12,
@@ -58,14 +58,15 @@ bool digitalRead(int);			//allows reading a digital value from a pin
 #define do_steer_l_en				23				//digital pin23, enable for the left direction of the steering motor
 #define do_brake1_enable			24				//digital pin24, enable for the braking pump
 #define do_brake2_enable			25				//digital pin25, enable for the braking pump
-#define do_drive_enable				26				//digital pin26, enable for the engine control system
-#define do_drive_forward			27				//digital pin27, forward enabled for the engine control system
-#define do_drive_reverse			28				//digital pin28, reverse enabled for the engine control system
-#define do_drive_brake				29				//digital pin29, brake signal for the engine control sytem
-#define do_drive_throttleswitch		30				//digital pin30, signal that needs to be high for the trottle to work of the Curtis
-#define di_keysignaal				31				//digital pin31, input that lets the system know it is on because of the key
-#define di_gnd_lader				32				//digital pin32, input that lets the system know it is on because of the charger
-#define do_hv_relais				33				//digital pin33, if High HV-relais will turn on
+#define do_engine_enable				26				//digital pin26, enable for the engine control system
+#define do_engine_forward			27				//digital pin27, forward enabled for the engine control system
+#define do_engine_reverse			28				//digital pin28, reverse enabled for the engine control system
+#define do_engine_brake				29				//digital pin29, brake signal for the engine control sytem
+#define do_engine_throttleswitch		30				//digital pin30, signal that needs to be high for the trottle to work of the Curtis
+#define do_hv_relay					31				//digital pin31, closes the HV relay when high
+//#define do_keysignaal				31				//digital pin31, input that lets the system know it is on because of the key
+//#define di_gnd_lader				32				//digital pin32, input that lets the system know it is on because of the charger
+//#define do_hv_relay					33				//digital pin33, if High HV-relay will turn on
 //#define do_verbinding				34				//digital pin34, if High, ignore the key, the system will keep itself on. 
 //DO NOT USE, THIS MAKES IT SO THE CAR CANNOT BE TURNED OFF EXCEPT BY MANUALLY DISCONNECTING THE BATTERY!
 #define do_pilotswitch				35				//digital pin35, output to speak with the charging system

@@ -37,17 +37,15 @@ extern int drivemode;				//operational mode of the car
 #define drivemode_auto 3			//Set when the car is driving automatically
 
 ///Drive variables
-extern int32_t driving_dv;			//desired value before split into engine_dv and steering_dv
+extern int32_t driving_dv;			//desired value before split into engine_dv and braking_dv
 
 extern int32_t steering_dv;			//desired value of the steering
-extern int32_t steering_cv;			//process value of the steering
+extern int64_t steering_cv;			//process value of the steering
+extern int16_t steering_delta;		//delta of the steering, the difference of the desired value and the current value
 extern uint8_t steering_ov;			//output value of the steering
-extern int32_t steering_delta;		//delta of the steering
+
 
 extern int32_t engine_dv;			//desired value of the engine
-extern int32_t engine_cv;			//process value of the engine
-extern uint8_t engine_ov;			//output value of the engine
-extern int32_t engine_delta;		//delta of the engine
 
 extern int32_t braking_dv;			//desired value of the braking
 extern int32_t braking_cv;			//process value of the braking
@@ -57,24 +55,32 @@ extern int32_t braking_delta;		//delta of the braking
 extern bool driving_direction;		//High when forward, low when reverse
 
 //driving parameters
-#define driving_joystick_offset 510		//offset for the engine sp from the joystick in %
-#define driving_deadzone 5					//dead band of the engine in %
-
-
-#define engine_joystick_maximum 137			//maximum value of the joystick
-#define engine_kp 3							//Proportional gain of the engine
-
 #define braking_sensor_offset 215			//offset for the brake pv in bar
 #define braking_kp 3						//Proportional gain of the braking
 
-#define steering_joystick_offset 507		//value of the steering joystick when not steering
-#define steering_joystick_maximum 137		//maximum value of the joystick
-#define steering_wheels_max_deg 350			//maximum angle of the wheel in degrees
-#define steering_sensor_offset 512			//offset for the steering actuator (it's resting value)
-#define steering_deadzone 50				//minimum steering angle before the car starts steering
-#define steering_kp 7						//Proportional gain of the steering
-//Curtis CAN
+//joystick parameters
+#define joystick_steer_offset 509			//default value of the steering joystick, when not steering x-axle
+#define joystick_drive_offset 510			//default value of the steering joystick, when not driving, y-axle
 
+#define joystick_steer_left_maximum 127		//maximum offset of the joystick from the default value, joystick_steer_offset when steering maximum left
+#define joystick_steer_right_maximum 140	//maximum offset of the joystick from the default value, joystick_steer_offset when steering maximum right
+#define joystick_engine_maximum 126			//maximum offset of the joystick from the default value, joystick_steer_offset when maximum speed
+#define joystick_brake_maximum 128			//maximum offset of the joystick from the default value, joystick_steer_offset when full braking
+
+
+
+//steering marameters
+#define steering_max_deg 270				//maximum angle of the wheels in 10ths of degrees, for reading/debugging purposes only, this value is completely arbitrary and only a ratio. If you want this accurate, measure degrees at maximum outline. Else completely arbitrary. To change the actual maximum angle, change the max value of the potentiometer
+#define steering_sensor_offset 512			//default value of the steering sensor, when driving straight
+#define steering_sensor_maximum 300			//maximum offset of the steering sensor, measured from the default value, steering_sensor_offset
+#define steering_deadzone 20				//minimum steering angle before the car starts steering, in 10th of degrees
+#define steering_kp 7						//Proportional gain of the steering
+
+//driving parameters
+#define drive_max_PWM 255					//because we have an 8 bit PMW signal to the engine
+#define driving_deadzone 20					//minimum engine/brake angle before the car starts reacting, in 10th of degrees
+
+//Curtis CAN
 extern uint16_t low_voltage;
 extern uint16_t engine_rpm;
 extern uint16_t engine_temp;

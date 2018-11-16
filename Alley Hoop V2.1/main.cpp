@@ -55,10 +55,6 @@ void printinfo(){
 	Serial.print(driving_direction);
 	Serial.print(" engine_dv = ");
 	Serial.print(engine_dv);
-	Serial.print(" speed. = ");
-	Serial.print(engine_cv);
-	Serial.print(" engine_ov = ");
-	Serial.print(engine_ov);
 	Serial.print(" brake_dv = ");
 	Serial.print(braking_dv);
 	Serial.print(" braking_ov = ");
@@ -70,7 +66,7 @@ void printinfo(){
 	Serial.print(steering_cv);
 	Serial.print(" steering_ov = ");
 	Serial.print(steering_ov);
-	Serial.print(" delta = ");
+	Serial.print(" steering_delta = ");
 	Serial.print(steering_delta);
 	Serial.print(" low volt = ");
 	Serial.print(low_voltage);
