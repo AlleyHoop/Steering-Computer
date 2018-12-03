@@ -11,7 +11,7 @@ void initIO(){
 	//digitalwrite
 	DDRA |= 0b11111111;
 	//B pins are reserved for SPI, don't touch those
-	DDRC |= 0b11111111;
+	DDRC |= 0b10110111;
 	DDRD |= 0b10000000;
 	DDRG |= 0b00000111;
 	//DDRL |= 0b11111111;

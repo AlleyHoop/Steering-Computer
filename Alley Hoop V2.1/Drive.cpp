@@ -64,6 +64,12 @@ void drive(){
 			mode_idle();		//not yet implemented
 			break;	
 	}
+	//prevent values past the maximum values being send, just a safety precaution
+	if(steering_dv>steering_max_deg)		//if the value exeeds the set maximum value
+		steering_dv=steering_max_deg;		//make it it maximum allowed value
+	if(steering_dv<-steering_max_deg)
+		steering_dv=-steering_max_deg;
+	
 	run_steer();				//update the steering system
 	run_brake();				//update the braking system
 	run_curtis();				//update the Curtis
@@ -144,6 +150,7 @@ void run_steer(){
 	if((abs(steering_delta)<10) && (steering_dv!= 0))											//if the two are too close together except the default position, don't steer, this to prevent the motor from constantly trying to make small correcting movements which it is not capable of, so it starts screeching
 		steering_delta=0;
 	steering_ov = constrain((abs(steering_delta) * steering_kp), 0, 255);						//determine the output PMW value in such a way that the smaller the delta, the slower it goes to smooth out steering
+
 		
 	if (steering_delta > 0) {																	//H bridge settings, let the engine turn the correct way
 		analogWrite(pwm_steer_rpwm, steering_ov);												//if the delta is smaller than 0, turn to the right		

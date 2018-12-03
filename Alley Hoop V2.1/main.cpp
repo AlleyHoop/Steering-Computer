@@ -30,7 +30,7 @@ int main(void){
 	Serial.println("Alley Hoop V2.1");
 	initIO();															//initializes the IO pins
 	initDrive();														//detect steering modus
-
+	digitalWrite(34,LOW);
 	if(CAN_Curt.begin(MCP_ANY, CAN_500KBPS, MCP_16MHZ) == CAN_OK)		//initialize the CAN BUS
 		Serial.println("MCP2515 Initialized Successfully!");
 	else

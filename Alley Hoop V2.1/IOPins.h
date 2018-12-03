@@ -43,11 +43,11 @@ bool digitalRead(int);			//allows reading a digital value from a pin
 //analog pinA15
 
 /// PWM
-#define pwm_steer_rpwm				2				//PWM pin02, pwm signal to control the speed if the steering motor in the right direction
-#define pwm_steer_lpwm				3				//PWM pin03, pwm signal to control the speed of the steering motor in the left direction
+#define pwm_steer_rpwm				3				//PWM pin02, pwm signal to control the speed if the steering motor in the right direction
+#define pwm_steer_lpwm				2				//PWM pin03, pwm signal to control the speed of the steering motor in the left direction
 #define pwm_brake_pump				7				//PWM pin07, pwm signal to control the speed of the braking pump
 #define pwm_drive_throttle			8				//PWM pin08, throttle signal that will control the engine
-#define di_remote_engine				9				//PWM pin09, gas signal of the remoteote controller (also brake)
+#define di_remote_engine			9				//PWM pin09, gas signal of the remoteote controller (also brake)
 #define di_remote_steering			10				//PWM pin10, steer signal of the remoteote controller
 #define di_remote_switchfr			11				//PWM pin11, switch to choose between forward en reverse drving of the remoteote
 #define pwm_laadpaal_pulse			12				//PWM pin12,
