@@ -27,16 +27,15 @@ uint16_t high_voltage;
 //initialize the driving
 void initDrive(){
 	digitalWrite(do_engine_enable, HIGH);			//set outputs high, enabling components, don't know why you would want them turned off.
-	digitalWrite(do_brake1_enable, HIGH);			//but it's designed into the PCB
-	digitalWrite(do_brake2_enable, HIGH);
-	digitalWrite(do_steer_r_en, HIGH);
-	digitalWrite(do_steer_l_en, HIGH);
+	digitalWrite(do_brake_enable, HIGH);			//but it's designed into the PCB
+	digitalWrite(do_steer_l_en,HIGH);
+	digitalWrite(do_steer_r_en,HIGH);
 	mode_select();									//get the currently selected drive mode
 }
 
 //determine startup mode, priority top to bottom, with default as idle (do nothing)
 void mode_select(){
-	if(digitalRead(di_hmi_switchstop)) {				//if joystick
+	if(digitalRead(di_hmi_switchjoystick)) {				//if joystick
 		drivemode=drivemode_joystick;
 	} else if (digitalRead(di_hmi_switchremote)){		//if remote
 		drivemode=drivemode_remote;
@@ -79,8 +78,9 @@ void mode_joystick(){
 	digitalWrite(34,HIGH);
 	digitalWrite(do_hv_relay,HIGH);													//enable the HV circuit
 	if(engine_rpm==0)																//only allow switching when the car isn't driving
-		driving_direction = digitalRead(di_hmi_switchfr);							//Detect if the car needs to be in forward or reverse mode from the HMI signals
-		
+		driving_direction = digitalRead(di_hmi_direction);							//Detect if the car needs to be in forward or reverse mode from the HMI signals
+	
+	//steering	
 	steering_dv = (analogRead(ai_hmi_steering)-joystick_steer_offset);				//get the offset from the default position by subtracting the offset from the retrieved value
 	steering_dv *= steering_max_deg;												//convert this to degrees by multiplying with the maximum degrees
 	if(steering_dv>=0)																//divide by the maximum to get the proper value ratio, split up for left and right steering because the joystick has different maximum values for each side
@@ -88,10 +88,9 @@ void mode_joystick(){
 	else
 		steering_dv /= joystick_steer_left_maximum;	
 
-	//read the desired value from the joystick for the driving and split it up into driving and braking
+	//gas and brake
 	driving_dv = analogRead(ai_hmi_engine) - joystick_drive_offset;					//get the offset from the default position by subtracting the offset from the retrieved value
-	driving_dv *= drive_max_PWM;														//multiply this with the maximum PMW signal. When we later divide by the maximum value for the direction, we are left with a pure PMW signal 
-
+	driving_dv *= drive_max_PWM;													//multiply this with the maximum PMW signal. When we later divide by the maximum value for the direction, we are left with a pure PMW signal 
 	engine_dv=0;																	//default don't drive or break
 	braking_dv=0;
 	if(driving_direction){															//if driving forward
@@ -105,7 +104,7 @@ void mode_joystick(){
 		else
 		engine_dv=abs(driving_dv/joystick_engine_maximum);							//drive (and make value positive)
 	}
-	braking_dv = constrain(braking_dv,0,255);										
+	braking_dv = constrain(braking_dv,0,255);										//safety precaution so no out of bound values can be parsed									
 }
 
 void mode_auto(){
@@ -130,11 +129,7 @@ void mode_remote(){
 }
 
 void run_brake(){
-	braking_cv = (long(analogRead(ai_brake_pressure) - braking_sensor_offset) * (250 / 1023));				//retrieve the current value of the brake pressure sensor
-	braking_delta = braking_dv - braking_cv;
-	if(abs(braking_delta)<10)
-		braking_delta = 0;
-	braking_ov = constrain(braking_dv * braking_kp, 0, 255);
+	braking_dv = (braking_dv<brake_min ? brake_min : braking_dv);		//if smaller than the minium value to upkeep base pressure, increase to base pressure
 	analogWrite(pwm_brake_pump, braking_dv);															//Write op to brake pump
 }
 
@@ -150,15 +145,17 @@ void run_steer(){
 	if((abs(steering_delta)<10) && (steering_dv!= 0))											//if the two are too close together except the default position, don't steer, this to prevent the motor from constantly trying to make small correcting movements which it is not capable of, so it starts screeching
 		steering_delta=0;
 	steering_ov = constrain((abs(steering_delta) * steering_kp), 0, 255);						//determine the output PMW value in such a way that the smaller the delta, the slower it goes to smooth out steering
-
+	if(steering_ov<steering_engine_minimum&&steering_ov!=0)
+		steering_ov=steering_engine_minimum;
 		
 	if (steering_delta > 0) {																	//H bridge settings, let the engine turn the correct way
-		analogWrite(pwm_steer_rpwm, steering_ov);												//if the delta is smaller than 0, turn to the right		
-		analogWrite(pwm_steer_lpwm, 0);
+		analogWrite(pwm_steer_rpwm, steering_ov);												//if the delta is smaller than 0, turn to the right by changing the polarity of the H-bridge
+		analogWrite(pwm_steer_lpwm, 0);															//
 	}
 	else if (steering_delta < 0) {
 		analogWrite(pwm_steer_rpwm, 0);															//if the delta is larger than 0
 		analogWrite(pwm_steer_lpwm, steering_ov);
+
 	}
 	else {
 		analogWrite(pwm_steer_rpwm, 0);															//if neither, do nothing
@@ -181,4 +178,43 @@ void run_curtis(){
 
 	analogWrite(pwm_drive_throttle, engine_dv);								//Write op to throttle signal of Curtis
 }
+/*
+unsigned long pulseIn(uint8_t channel, uint8_t state){
+	//convert the channel to the correct bit in the PF register, and also check if the channel is correct. if not, return 0
+	if(channel<1||channel>5){
+		Serial.println("tried to read invalid remote channel");
+		return 0;
+	}
+	uint8_t bit = channel++;
+	uint8_t stateMask = (state ? bit : 0);
+	
+	Serial.println("test");
+	//convert the timeout values to clock cycles	
+	unsigned long maxloops = F_CPU / 16;
+	
+	unsigned long width = 0;
+	// wait for any previous pulse to end 
+	while ((PINL & (1<<2)))
+	//if the maxloops reaches zero, the timeout is reached and the operation is cancelled
+		if (--maxloops == 0)
+			return 0;
 
+// wait for the pulse to start
+	while ((PINL& (1<<2))==0)
+		if (--maxloops == 0)
+			return 0;
+
+// wait for the pulse to stop
+	while (PINL & (1<<2)) {
+		if (++width == maxloops)
+		return 0;
+		}
+	return width;
+	
+
+	if (width)
+		return ((width * 16 + 16) / ( F_CPU / 1000000L ) );
+	else
+		return 0;		
+}
+*/

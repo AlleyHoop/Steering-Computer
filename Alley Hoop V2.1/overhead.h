@@ -1,10 +1,28 @@
+/*
+*This is a header for headers. These defines and includes need to added to pretty much all headers, so to save space, increase readability and allow for better modifiability, they were all placed in this file, and only this file is
+*included in the headers
+*/
+
+
 #ifndef OVERHEAD_H_
 #define OVERHEAD_H_
 
+#define F_CPU 16000000L
+
+
+#include <avr/io.h>			//massive define lists with registries
+#include <avr/interrupt.h>
+#include <avr/io.h>			
+#include <util/delay.h>		//allows usage of _delay_ms()
 #include "IOPins.h"
 #include "USART.h"
 #include "SPI.h"
 #include "mcp_can.h"
+#include "Arduino.h"
+
+
+//comment this piece in or out to enable debug mode, which prints all the diagnostic informations
+#define DEBUG_MODE
 
 #define HIGH 1
 #define LOW 0

@@ -24,12 +24,9 @@ class MCP_CAN
  *********************************************************************************************************/
    // private:
    private:
-
     void mcp2515_reset(void);                                           // Soft Reset MCP2515
-
     uint8_t mcp2515_readRegister(const uint8_t address);                    // Read MCP2515 register
-    
-    void mcp2515_readRegisterS(const uint8_t address,                     // Read MCP2515 successive registers
+        void mcp2515_readRegisterS(const uint8_t address,                     // Read MCP2515 successive registers
 	                             uint8_t values[], 
                                const uint8_t n);
    

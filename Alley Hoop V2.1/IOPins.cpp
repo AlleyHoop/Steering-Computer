@@ -1,61 +1,83 @@
 #include "IOPins.h"
 
-//this funcion should be called when initializng the program. It writes the correct settings to the registry, allowing the use of analog and digital reading and writing of pins.
+//this function should be called when initializing the program. It writes the correct settings to the registry, allowing the use of analog and digital reading and writing of pins.
 void initIO(){
+	/*Parts of these pins are used for different functions, don't just attach them to the pins:
+	Timer1: 
+	
+	*/
 	Serial.println("Applying IO settings...");
 	//////////////////////////////////////
-	//Read/Write pins
+	//Input;Output
 	//////////////////////////////////////
-	//Disable the pullup resistor in these pins, making them output by writing a 1 to their respective registry entries. Pins not written to default to input pins.
-	//when adding/altering pins, alter them in the respective switch case as well.
+	//Designate output pins: Disable the pull up resistor in these pins and making them output by writing a 1 to their respective registry entries. Pins not written to default to input pins.
+	//when adding/altering pins, alter them in their respective switch case as well.
 	//digitalwrite
-	DDRA |= 0b11111111;
-	//B pins are reserved for SPI, don't touch those
-	DDRC |= 0b10110111;
-	DDRD |= 0b10000000;
-	DDRG |= 0b00000111;
-	//DDRL |= 0b11111111;
+	//		  76543210
+	DDRA |= 0b11110111;				//pin 22-29
+	DDRB |= 0b00000000;				//PB0-3 are reserved for SPI, don't use those
+	DDRC |= 0b10011000;				
+	DDRD |= 0b00000000;
+	DDRE |= 0b00110000;
+	DDRF |= 0b00000000;				//analog pins A0-A7
+	DDRG |= 0b00000000;
+	DDRH |= 0b00110000;
+	DDRJ |= 0b00000000;				//only used for Serial3
+	//DDRI doesnt exist
+	DDRK |= 0b00000000;				// analog pins A8-A15
+	DDRL |= 0b00000000;				// digital pins 49-42
+	//analogwrite, Not all pins support PWM signals, please consult data sheets before altering.
 	
-	//analogwrite, Not all pins support PWM signals, please consult datasheets before altering.
-	DDRB |= 0b11110000;
-	DDRE |= 0b00111000;
+	
 	DDRG |= 0b00100000;
 	DDRH |= 0b01111000;
 	DDRL |= 0b00111000;
-	//////////////////////////////////////
-	//PMW, analogWrite
-	//////////////////////////////////////
-	//when something is unclear or you want to change some setting, please consult the datasheet first.
 	
-	//Compare output mode
+	//remote control, digital inputs
+	//////////////////////////////////////
+	//Timers, used for PWM and PulseIn
+	//////////////////////////////////////
+	//when something is unclear or you want to change some setting, please consult the data sheet first.
+	
+	//Compare Output Mode
 	//determines how the PWN behaves, now it Clears OCxx on compare match. This makes it so that low value OCRxx will result in short pulses, while higher result in longer ones
 	//COM0xx0 will make OCxx toggle on compare match, both will set om compare match. Neither will disable the pmw by disconnecting OCxx.
-	TCCR0A |= (( 1 << COM0A1) | (1 << COM0B1));
-	TCCR1A |= (( 1 << COM1A1) | (1 << COM1B1));
-	TCCR2A |= (( 1 << COM2A1) | (1 << COM2B1));
-	TCCR3A |= (( 1 << COM3A1) | (1 << COM3B1));
-	//TCCR4A |= (( 1 << COM4A1) | (1 << COM4B1));
+	TCCR0A |= (( 1 << COM0A1) | (1 << COM0B1));			//Timer0, used for PB7, PG5
+	//TCCR1A |= (( 1 << COM1A1) | (1 << COM1B1));		//Timer1, used PulseIn command, measuring pulse lenghts. Because we don't use it for PWM it is disabled as such 
+	TCCR2A |= (( 1 << COM2A1) | (1 << COM2B1));			//Timer2, used for PB4, PH6
+	TCCR3A |= (( 1 << COM3A1) | (1 << COM3B1));			//TImer3, used for PE3, PE4, PE5
+	TCCR4A |= (( 1 << COM4A1) | (1 << COM4B1));			//Timer4, used for PH3, PH5, PH6
+	TCCR5A |= (( 1 << COM5A1) | (1 << COM5B1));			//Timer5, used for PL3, PL4, PL5
 	
-	//Waveform Generation
-	//note that here OCRxA and OCRxB use the same registry and thus also use the same waveform.
+	//Waveform Generation Mode
+	//note that here OCRxA, OCRxB and OCRxC use the same registry and thus also use the same waveform.
 	//the current PWM is Fast PMW, but in this case the PWM mode isn't really important.
-	TCCR0A |= ((1 << WGM01) | (1 << WGM00));
-	TCCR1A |= ((1 << WGM12) | (1 << WGM10));		//16 bit timer, scaled back to 8 bit. (TCCR0x and TCCR2x are 8 bit already)
-	TCCR2A |= ((1 << WGM21) | (1 << WGM20));
-	TCCR3A |= ((1 << WGM32) | (1 << WGM30));		//16 bit
-	//TCCR4A |= ((1 << WGM42) | (1 << WGM40));
+	TCCR0A |= ((1 << WGM01) | (1 << WGM00));									//8 bit
+	TCCR1A |= ((1 << WGM13) | (1 << WGM12) | (1 << WGM11) | (1 << WGM10));		//16 bit, TOP=OCR1A
+	TCCR2A |= ((1 << WGM21) | (1 << WGM20));									//8 bit
+	TCCR3A |= ((1 << WGM32) | (1 << WGM30));									//16 bit timer, scaled back to 8 bit. 
+	TCCR4A |= ((1 << WGM42) | (1 << WGM40));									//16 bit timer, scaled back to 8 bit. 
+	TCCR5A |= ((1 << WGM52) | (1 << WGM50));									//16 bit timer, scaled back to 8 bit. 
 	
-	//clock Select
+	//Clock Select
 	//currently selected, Internal clock, /8 prescaler. this starts the PWM as well
 	//F_CPU=16000000 / 256 / 8 ~= 7812Hz wave
 	//again as with the OCRxx, these use the same registry as well and are thus linked
 	TCCR0B |= (1 << CS01);
-	TCCR1B |= (1 << CS11);
+	TCCR1B |= ((1 << CS10) | (1 << CS12));		//no prescaling
 	TCCR2B |= (1 << CS21);
 	TCCR3B |= (1 << CS31);
 	TCCR4B |= (1 << CS41);
+	TCCR5B |= (1 << CS51);
+	/*
+	//initialize counters
+	TCNT1=0;
 	
-	//initialize each pwm as 0
+	//Timer/Counter Interrupt Mask Register
+	TIMSK1 |= (1 << TOIE1);
+	
+	sei();	//enable global interrupts*/
+	//initialize each PWM as 0
 	OCR3B=0;	//pin 2
 	OCR3C=0;	//pin 3
 	OCR0B=0;	//pin 4
@@ -66,8 +88,11 @@ void initIO(){
 	OCR2B=0;	//pin 9
 	OCR2A=0;	//pin 10
 	OCR1A=0;	//pin 11
-	OCR1B=0;	//pin 12
-	OCR1C=0;	//pin 13
+	//OCR1B=0;	//pin 12
+	//OCR1C=0;	//pin 13
+	OCR5A=0;	//pin 44
+	OCR5B=0;	//pin 45
+	OCR5C=0;	//pin 46
 	
 	//////////////////////////////////////
 	//Analog Digital Converter, analogread
@@ -80,7 +105,7 @@ void initIO(){
 	// 1/128 prescaler
 	ADCSRA |= (1 << ADPS0) | (1 << ADPS1) | (1 << ADPS2);
 	
-	//enable the ADC convector, and disable GPIO functionality on the ADC pins
+	//enable the ADC convector
 	ADCSRA |= (1 << ADEN);
 	Serial.println("IO setting generated");
 	return;
@@ -88,9 +113,9 @@ void initIO(){
 
 
 //writes a value between 0 and 255 to the correct output compare register
-//analogWrite(pin numer, value it should receive).
+//analogWrite(pin number, value it should receive).
 void analogWrite(int pin,int val){
-	if(val>255)			//if the given value exeeds 255, make it 255
+	if(val>255)			//if the given value exceeds 255, make it 255
 	val=255;
 	switch(pin){
 		case 2:
@@ -121,10 +146,20 @@ void analogWrite(int pin,int val){
 		OCR2A=val;
 		return;
 		case 11:
-		OCR1A=val;
+//		used for timer1
+// 		OCR1A=val;
+// 		return;
+// 		case 12:
+// 		OCR1B=val;
+// 		return;
+		case 44:
+		OCR5C=val;
 		return;
-		case 12:
-		OCR1B=val;
+		case 45:
+		OCR5B=val;
+		return;
+		case 46:
+		OCR5C=val;
 		return;
 		}
 	Serial.println("ERROR: tried to write analog value to unsupported pin");
@@ -133,12 +168,12 @@ void analogWrite(int pin,int val){
 
 //writes a digital value to a pin.
 void digitalWrite(int pin,bool val){
-	if(pin<22||pin>53){					//check if the pin is a digital IO pin
+	if(pin<22||pin>53){					//check if the pin is a digital IO pin and supported as such
 		Serial.print("ERROR: tried to write digital value to unsupported digital pin");
 		Serial.println(pin);
 	}
 	else if(pin<30){					//check if pin is in the A register
-		pin-=22;						//make pinrange 0-7
+		pin-=22;						//make pin range 0-7
 		if(val) PORTA |= (1<<pin);		//set correct bit in A register is val==true
 		else PORTA &= ~(1<<pin);		//unset bit if false
 	}
